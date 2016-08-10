@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"	
+	xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+	xsi:schemaLocation="http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd" >
+	
+	<context:component-scan base-package="com.sfdj.test.service"/>
+	<!-- RDS mysql数据源配置 -->
+    <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close"> 
+      <!-- 基本属性 url、user、password -->
+      <property name="driverClassName" value="com.mysql.jdbc.Driver" />
+      <property name="url" value="jdbc:mysql://120.76.75.116:3306/ha?useUnicode=true&amp;characterEncoding=UTF-8&amp;generateSimpleParameterMetadata=true&amp;zeroDateTimeBehavior=convertToNull" />
+      <property name="username" value="root" />
+      <property name="password" value="sfdj@123DB" />
+
+      <!-- 配置初始化大小、最小、最大 -->
+      <property name="initialSize" value="1" />
+      <property name="minIdle" value="1" /> 
+      <property name="maxActive" value="20" />
+
+      <!-- 配置获取连接等待超时的时间 -->
+      <property name="maxWait" value="60000" />
+
+      <!-- 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 -->
+      <property name="timeBetweenEvictionRunsMillis" value="60000" />
+
+      <!-- 配置一个连接在池中最小生存的时间，单位是毫秒 -->
+      <property name="minEvictableIdleTimeMillis" value="300000" />
+
+      <property name="validationQuery" value="SELECT 'x'" />
+      <property name="testWhileIdle" value="true" />
+      <property name="testOnBorrow" value="false" />
+      <property name="testOnReturn" value="false" />
+
+      <!-- 打开PSCache，并且指定每个连接上PSCache的大小 -->
+      <property name="poolPreparedStatements" value="false" />
+      <property name="maxPoolPreparedStatementPerConnectionSize" value="20" />
+
+      <!-- 配置监控统计拦截的filters -->
+      <property name="filters" value="stat" /> 
+    </bean>
+  
+  	<!-- 配置Mybatis SqlSessionFactoryBean 自动装配映射文件 -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="mapperLocations" value="classpath*:com/sfdj/test/dao/ha/**/*.xml" />
+	</bean>
+	<!-- 自动 映射DAO层 -->
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<property name="basePackage" value="com.sfdj.test.dao.ha.**" />
+		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+	</bean>
+	
+	<!-- spring jms -->
+    <!-- 真正可以产生Connection的ConnectionFactory，由对应的 JMS服务厂商提供-->  
+	<bean id="mnsConnectionFactory" class="com.aliyun.mns.extended.javamessaging.MNSConnectionFactory">
+		<constructor-arg>
+			<bean class="com.aliyun.mns.extended.javamessaging.MNSConnectionFactory.Builder">
+				<property name="accessKeyId" value="8XJ5coBi87mrWWLo" />
+				<property name="accessKeySecret" value="GgL4ijHQUQo42Rvfe9bBWe8h19rD0M" />
+				<property name="endpoint" value="http://1677557593640653.mns.cn-shenzhen.aliyuncs.com" />
+			</bean>
+		</constructor-arg>
+	</bean>  
+	<!-- Spring用于管理真正的ConnectionFactory的ConnectionFactory -->  
+	<bean id="connectionFactory" class="org.springframework.jms.connection.SingleConnectionFactory">  
+	    <!-- 目标ConnectionFactory对应真实的可以产生JMS Connection的ConnectionFactory -->  
+	    <property name="targetConnectionFactory" ref="mnsConnectionFactory"/>
+	</bean>
+	
+	<!-- Spring提供的JMS工具类，它可以进行消息发送、接收等 -->  
+    <bean id="jmsTemplate" class="org.springframework.jms.core.JmsTemplate">  
+        <!-- 这个connectionFactory对应的是我们定义的Spring提供的那个ConnectionFactory对象 -->  
+        <property name="connectionFactory" ref="connectionFactory"/>  
+    </bean> 
+    
+    <!-- ############################################################################################################################ -->
+    <!-- 集成阿里云MNS消息服务 -->
+    <bean id="cloudAccount" class="com.aliyun.mns.client.CloudAccount">
+    	<constructor-arg name="accessId" value="8XJ5coBi87mrWWLo" />
+    	<constructor-arg name="accessKey" value="GgL4ijHQUQo42Rvfe9bBWe8h19rD0M" />
+    	<constructor-arg name="accountEndpoint" value="http://1677557593640653.mns.cn-shenzhen.aliyuncs.com" />
+    </bean>
+    <!-- 初始化MNS客户端 -->
+    <bean id="defaultMNSClient" class="com.aliyun.mns.client.MNSClient" factory-bean="cloudAccount" factory-method="getMNSClient" />
+    
+    <!-- 启动消息监听程序 -->
+    <bean id="mnsMessageServiceListener" class="com.sfdj.test.service.mns.demo.listener.MnsMessageServiceListener">
+    	<constructor-arg name="defaultMNSClient" ref="defaultMNSClient" />
+    	<constructor-arg name="poolSize" value="2" />
+    	<constructor-arg name="handles">
+    		<list>
+    			<ref bean="ordrerMessageHandle"/><!-- 订单处理(清洗 安装 维修) -->
+    		</list>
+    	</constructor-arg>
+    </bean>
+
+    <!-- 订单处理(清洗 安装 维修) -->
+	<bean id="ordrerMessageHandle" class="com.sfdj.test.service.mns.demo.message.OrderMessageHandleImp">
+		<constructor-arg name="queueName" value="sfdj-order-queue-test" />
+	</bean>
+	
+	<!-- dubbox 消息者配置 -->
+	<dubbo:application name="demo-consumer" owner="sfdj" organization="dubbox"/>
+    <dubbo:registry address="N/A" />
+    <!-- MNS消息服务发送接口 -->
+    <dubbo:reference id="mnsSendService" interface="com.synservice.api.msgsend.MnsSendService" url="dubbo://10.120.220.93:20880" />
+</beans>
