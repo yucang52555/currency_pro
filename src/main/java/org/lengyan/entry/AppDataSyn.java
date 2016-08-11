@@ -1,4 +1,4 @@
-package org.lengyan.currency;
+package org.lengyan.entry;
 
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
