@@ -26,14 +26,14 @@ public class GenEntityMysql {
     private boolean f_sql = false; // 是否需要导入包java.sql.*  
       
     //数据库连接  
-    private static final String URL ="jdbc:mysql://10.120.121.191:3306/base";  
-    private static final String NAME = "root";  
-    private static final String PASS = "2005901124";  
-    private static final String DRIVER ="com.mysql.jdbc.Driver";  
+    private static final String URL ="jdbc:mysql://10.120.121.191:3306/base";
+    private static final String NAME = "root";
+    private static final String PASS = "2005901124";
+    private static final String DRIVER ="com.mysql.jdbc.Driver";
 
     /* 
      * 构造函数 
-     */  
+     */
     public GenEntityMysql(){  
         //创建连接  
         Connection con;  
@@ -208,7 +208,7 @@ public class GenEntityMysql {
                 || sqlType.equalsIgnoreCase("nvarchar") || sqlType.equalsIgnoreCase("nchar")   
                 || sqlType.equalsIgnoreCase("text")){  
             return "String";  
-        }else if(sqlType.equalsIgnoreCase("datetime")){  
+        }else if(sqlType.equalsIgnoreCase("datetime")){
             return "Date";  
         }else if(sqlType.equalsIgnoreCase("image")){  
             return "Blod";  
