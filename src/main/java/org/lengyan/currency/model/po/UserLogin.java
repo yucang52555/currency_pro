@@ -6,8 +6,8 @@ package org.lengyan.currency.model.po;
  */ 
 public class UserLogin{
 	private long id;
-	private String login_name;
-	private String pass_word;
+	private String loginName;
+	private String passWord;
 
 	public void setId(long id){
 		this.id = id;
@@ -17,20 +17,20 @@ public class UserLogin{
 		return id;
 	}
 
-	public void setLogin_name(String login_name){
-		this.login_name = login_name;
+	public void setLoginName(String loginName){
+		this.loginName = loginName;
 	}
 
-	public String getLogin_name(){
-		return login_name;
+	public String getLoginName(){
+		return loginName;
 	}
 
-	public void setPass_word(String pass_word){
-		this.pass_word = pass_word;
+	public void setPassWord(String passWord){
+		this.passWord = passWord;
 	}
 
-	public String getPass_word(){
-		return pass_word;
+	public String getPassWord(){
+		return passWord;
 	}
 
 }
