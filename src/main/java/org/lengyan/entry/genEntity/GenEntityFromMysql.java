@@ -187,14 +187,14 @@ public class GenEntityFromMysql {
 		String content = parse(colnames,colTypes,colSizes);
 		try {
 			File directory = new File("");
-			//System.out.println("绝对路径："+directory.getAbsolutePath());
-			//System.out.println("相对路径："+directory.getCanonicalPath());
-			String path=this.getClass().getResource("").getPath();
-			System.out.println(path);
-			System.out.println("src/?/"+path.substring(path.lastIndexOf("/org/", path.length())) );
+//			System.out.println("绝对路径："+directory.getAbsolutePath());
+			System.out.println("相对基础路径："+directory.getCanonicalPath());
+//			String path=this.getClass().getResource("").getPath();
+//			System.out.println(path);
+//			System.out.println("src/?/"+path.substring(path.lastIndexOf("/org/", path.length())) );
 			//String outputPath = directory.getAbsolutePath()+ "/src/"+path.substring(path.lastIndexOf("/com/", path.length()), path.length()) + initcap(tablename) + ".java";
 			String outputPath = directory.getAbsolutePath()+ "\\src\\main\\java\\"+this.packageOutPath.replace(".", "\\")+"\\"+initcap(entityName) + ".java";
-			System.out.println(outputPath);
+			System.out.println("绝对路径：" + outputPath);
 			FileUtils.createNewFile(outputPath);
 			FileWriter fw = new FileWriter(outputPath);
 			PrintWriter pw = new PrintWriter(fw);
