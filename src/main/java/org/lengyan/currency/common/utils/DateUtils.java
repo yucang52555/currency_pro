@@ -160,6 +160,26 @@ public class DateUtils {
 	}
 	
 	/**
+	 * 指定时间往前推指定单位时间
+	 * @param tdate
+	 * @param timeUnit
+	 * @param count
+	 * @return
+	 */
+	public static Date reduceDays(Date tdate, int timeUnit, int count){
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(tdate);
+		if (Calendar.DAY_OF_MONTH == timeUnit) {
+			calendar.set(Calendar.DAY_OF_MONTH, calendar.get(timeUnit) - count);
+		}
+		calendar.set(Calendar.HOUR_OF_DAY, 0);
+		calendar.set(Calendar.MINUTE, 0);
+		calendar.set(Calendar.SECOND, 0);
+		calendar.set(Calendar.MILLISECOND, 0);
+		return calendar.getTime();
+	}
+	
+	/**
 	 * 指定时间往后推一个小时
 	 * @return
 	 */
@@ -199,5 +219,8 @@ public class DateUtils {
 	
 	public static void main(String[] args) {
 		System.out.println(getCurHour());
+		Date date = DateUtils.toDate("2015-12-20", DATE_FORMAT_YYYYMMDD);
+		date = reduceDays(date, Calendar.DAY_OF_MONTH, 280);
+		System.out.println(DateUtils.dateToStr(date));
 	}
 }

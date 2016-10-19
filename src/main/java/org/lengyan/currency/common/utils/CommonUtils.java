@@ -28,4 +28,22 @@ public class CommonUtils {
 	public static int lengthOf(Object[] elements) {
 		return elements == null ? 0: elements.length;
 	}
+	
+	/**
+	 * 判断集合是否为空
+	 * @param list
+	 * @return
+	 */
+	public static boolean isEmpty(List<?> list){
+        return  list==null||list.size()==0;
+    }
+
+	/**
+	 * 判断集合是否不为空
+	 * @param list
+	 * @return
+	 */
+    public static boolean isNotEmpty(List<?> list){
+        return !isEmpty(list);
+    }
 }
