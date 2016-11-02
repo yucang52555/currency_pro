@@ -1,9 +1,11 @@
 package org.lengyan.currency.common.mail;
 
+import java.util.List;
 import java.util.Properties;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import org.apache.commons.mail.EmailAttachment;
 
 /**
  * 发送邮件需要使用的基本信息 
@@ -29,7 +31,11 @@ public class MailInfo {
 	// 邮件的文本内容
 	private String content;
 	// 邮件附件的文件名
-	private String[] attachFileNames;
+	private List<EmailAttachment> attachmentFile;
+	// url地址
+	private String urlPath;
+	
+	
 
 	/**
 	 * 获得邮件会话属性
@@ -66,12 +72,12 @@ public class MailInfo {
 		this.validate = validate;
 	}
 
-	public String[] getAttachFileNames() {
-		return attachFileNames;
+	public List<EmailAttachment> getAttachmentFile() {
+		return attachmentFile;
 	}
 
-	public void setAttachFileNames(String[] fileNames) {
-		this.attachFileNames = fileNames;
+	public void setAttachmentFile(List<EmailAttachment> attachmentFile) {
+		this.attachmentFile = attachmentFile;
 	}
 
 	public String getFromAddress() {
