@@ -66,6 +66,9 @@ public class MailSender {
 	
 	/**
 	 * 发送Html格式邮件
+	 * 该行为存在以下安全隐患：
+	 * 	1） 邮件客户端未经有效识别，不能有效保证帐户安全性，存在帐号密码泄漏的风险；
+	 * 	2） 数据传输安全性低，存在数据泄漏风险。
 	 * @param mailInfo
 	 * @return
 	 * @throws EmailException
